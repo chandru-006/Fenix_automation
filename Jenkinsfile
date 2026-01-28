@@ -8,6 +8,15 @@ pipeline {
   environment {
     BASE_URL = 'https://your-env-url'
   }
+    stage('Run Tests') {
+  environment {
+    WALMART_USERNAME = credentials('WALMART_USERNAME')
+    WALMART_PASSWORD = credentials('WALMART_PASSWORD')
+  }
+  steps {
+    sh 'npx playwright test'
+  }
+}
 
   stages {
     stage('Checkout') {

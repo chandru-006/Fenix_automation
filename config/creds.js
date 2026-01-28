@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 module.exports = {
   walmart: {
     username: process.env.WALMART_USERNAME,

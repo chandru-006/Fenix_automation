@@ -7,10 +7,9 @@ pipeline {
 
   environment {
     NODE_ENV = 'ci'
-
-    // Jenkins Credentials (Secret Text)
-    WALMART_USERNAME = credentials('WALMART_USERNAME')
-    WALMART_PASSWORD = credentials('WALMART_PASSWORD')
+    BASE_URL = 'https://fenix-wmconnector.sigmainfo.net/oauth/index'
+    WALMART_USERNAME = 'test@sigma.com'
+    WALMART_PASSWORD = 'Sigma@123'
   }
 
   stages {
@@ -23,11 +22,7 @@ pipeline {
 
     stage('Install Dependencies') {
       steps {
-        sh '''
-          node -v
-          npm -v
-          npm ci
-        '''
+        sh 'npm ci'
       }
     }
 
@@ -46,11 +41,15 @@ pipeline {
 
   post {
     always {
-      allure(
-        includeProperties: false,
-        jdk: '',
-        results: [[path: 'allure-results']]
-      )
+      script {
+        if (fileExists('allure-results')) {
+          allure(
+            includeProperties: false,
+            jdk: '',
+            results: [[path: 'allure-results']]
+          )
+        }
+      }
     }
 
     failure {

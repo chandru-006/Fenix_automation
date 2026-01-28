@@ -84,8 +84,8 @@ test('TC-07: Login submission navigates forward', async ({ page }) => {
   await login.enterUsername(walmart.username);
   await login.enterPassword(walmart.password);
   await login.submit();
+  await expect(page).toHaveURL(/login\.account\.wal-mart\.com\/authorize/);
 
-  await expect(page).not.toHaveURL(/\/oauth\/login/);
 });
 
 /* ---------- TC-08 ---------- */

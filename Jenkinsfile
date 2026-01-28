@@ -1,8 +1,16 @@
 pipeline {
   agent any
 
+  tools {
+    nodejs 'node18'
+  }
+
   environment {
     NODE_ENV = 'ci'
+
+    // Injected securely from Jenkins Credentials
+    WALMART_USERNAME = credentials('WALMART_USERNAME')
+    WALMART_PASSWORD = credentials('WALMART_PASSWORD')
   }
 
   stages {
@@ -15,7 +23,11 @@ pipeline {
 
     stage('Install Dependencies') {
       steps {
-        sh 'npm ci'
+        sh '''
+          node -v
+          npm -v
+          npm ci
+        '''
       }
     }
 
@@ -26,12 +38,15 @@ pipeline {
     }
 
     stage('Run Tests') {
-      environment {
-        WALMART_USERNAME = credentials('WALMART_USERNAME')
-        WALMART_PASSWORD = credentials('WALMART_PASSWORD')
-      }
       steps {
-        sh 'npx playwright test'
+        sh '''
+          if [ -z "$WALMART_USERNAME" ] || [ -z "$WALMART_PASSWORD" ]; then
+            echo "❌ Missing Walmart credentials"
+            exit 1
+          fi
+
+          npx playwright test
+        '''
       }
     }
   }

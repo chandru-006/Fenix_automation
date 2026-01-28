@@ -8,7 +8,7 @@ pipeline {
   environment {
     NODE_ENV = 'ci'
 
-    // Injected securely from Jenkins Credentials
+    // Jenkins Credentials (Secret Text)
     WALMART_USERNAME = credentials('WALMART_USERNAME')
     WALMART_PASSWORD = credentials('WALMART_PASSWORD')
   }
@@ -39,14 +39,7 @@ pipeline {
 
     stage('Run Tests') {
       steps {
-        sh '''
-          if [ -z "$WALMART_USERNAME" ] || [ -z "$WALMART_PASSWORD" ]; then
-            echo "❌ Missing Walmart credentials"
-            exit 1
-          fi
-
-          npx playwright test
-        '''
+        sh 'npx playwright test'
       }
     }
   }

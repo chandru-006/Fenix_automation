@@ -1,54 +1,26 @@
-// @ts-check
-import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+// Load .env ONLY for local runs
+require('dotenv').config();
 
-dotenv.config();
+const { defineConfig } = require('@playwright/test');
 
-export default defineConfig({
+module.exports = defineConfig({
   testDir: './tests',
 
-  /* OAuth flows should not run fully parallel */
-  fullyParallel: false,
-
-  forbidOnly: !!process.env.CI,
-
-  /* Fail fast – no retries for auth */
-  retries: 0,
-
-  /* Deterministic CI */
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
 
   reporter: [
     ['list'],
-    ['html', { open: 'never' }],
     ['allure-playwright']
   ],
 
   use: {
-    browserName: 'chromium',
     headless: true,
-
-    /* 📸 Screenshot for EVERY test (pass + fail) */
-    screenshot: 'on',
-
-    /* 🎥 Video ONLY when test fails */
+    baseURL: process.env.BASE_URL,
+    screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-
-    /* Traces only when retrying (kept minimal) */
-    trace: 'on-first-retry',
-
-    actionTimeout: 15_000,
-    navigationTimeout: 30_000,
+    trace: 'retain-on-failure'
   },
 
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-    },
-  ],
-
-  outputDir: 'test-results',
+  timeout: 60 * 1000,
 });

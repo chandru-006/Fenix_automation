@@ -1,8 +1,9 @@
 function requireEnv(name) {
-  if (!process.env[name]) {
-    throw new Error(`Missing required env variable: ${name}`);
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
   }
-  return process.env[name];
+  return value;
 }
 
 module.exports = {
